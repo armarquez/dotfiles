@@ -279,7 +279,7 @@ _load-lastupdate-from-file() {
 
 _update-zsh-quickstart() {
   if [[ ! -L ~/.zshrc ]]; then
-    echo ".zshrc is not a symlink, skipping zsh-quickstart-kit update"
+    echo ".zshrc is not a symlink, skipping dotfiles update"
   else
     local _link_loc=$(readlink ~/.zshrc);
     if [[ "${_link_loc/${HOME}}" == "${_link_loc}" ]] then
@@ -289,13 +289,13 @@ _update-zsh-quickstart() {
     fi;
       local gitroot=$(git rev-parse --show-toplevel)
       if [[ -f "${gitroot}/.gitignore" ]]; then
-        if [[ $(grep -c zsh-quickstart-kit "${gitroot}/.gitignore") -ne 0 ]]; then
+        if [[ $(grep -c dotfiles "${gitroot}/.gitignore") -ne 0 ]]; then
           echo "---- updating ----"
           git pull
           date +%s >! ~/.zsh-quickstart-last-update
         fi
       else
-        echo 'No quickstart marker found, is your quickstart a valid git checkout?'
+        echo 'No quickstart marker found, is your dotfiles a valid git checkout?'
       fi
     popd
   fi
@@ -307,8 +307,8 @@ _check-for-zsh-quickstart-update() {
   local last_quickstart_update=$(_load-lastupdate-from-file ~/.zsh-quickstart-last-update)
 
   if [ ${last_quickstart_update} -gt ${refresh_seconds} ]; then
-    echo "It has been $(expr ${last_quickstart_update} / ${day_seconds}) days since your zsh quickstart kit was updated"
-    echo "Checking for zsh-quickstart-kit updates..."
+    echo "It has been $(expr ${last_quickstart_update} / ${day_seconds}) days since your dotfiles was updated"
+    echo "Checking for dotfiles updates..."
     _update-zsh-quickstart
   fi
 }
@@ -317,6 +317,9 @@ if [[ ! -z "$QUICKSTART_KIT_REFRESH_IN_DAYS" ]]; then
   _check-for-zsh-quickstart-update
   unset QUICKSTART_KIT_REFRESH_IN_DAYS
 fi
+
+# Fixes issue with not having Node installed for working with bullet-train - https://github.com/caiogondim/bullet-train.zsh/issues/192
+export BULLETTRAIN_PROMPT_ORDER=($(echo ${BULLETTRAIN_PROMPT_ORDER[@]/#%nvm}))
 
 # Lines configured by zsh-newuser-install
 setopt autocd extendedglob nomatch notify
