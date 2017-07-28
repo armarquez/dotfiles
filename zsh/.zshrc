@@ -159,10 +159,12 @@ if [ -d /Library/Java/Home ];then
   export JAVA_HOME=/Library/Java/Home
 fi
 
-# Setup jenv to manage JAVA enviroments
+# Setup jenv to manage JAVA environments
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 
+# Setup pyenv to manage Python environments
+if which pyenv > /dev/null; then eval “$(pyenv init -)“; fi
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
   # We're on osx
