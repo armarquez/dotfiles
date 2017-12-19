@@ -167,10 +167,12 @@ eval "$(jenv init -)"
 export PATH="$HOME/.pyenv/bin:$PATH"
 if which pyenv > /dev/null; then 
   eval "$(pyenv init -)"
-  pyenv virtualenvwrapper_lazy
+  eval "$(pyenv virtualenv-init -)"
 fi
 
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+if which pyenv-virtualenv-init > /dev/null; then 
+  pyenv virtualenvwrapper_lazy
+fi
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
