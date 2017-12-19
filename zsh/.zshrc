@@ -164,20 +164,21 @@ export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 
 # Setup pyenv to manage Python environments
+export PATH="$HOME/.pyenv/bin:$PATH"
 if which pyenv > /dev/null; then 
-  export PATH="~/.pyenv/bin:$PATH"
   eval "$(pyenv init -)"
+  pyenv virtualenvwrapper_lazy
 fi
-#if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-pyenv virtualenvwrapper_lazy
+
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 
 # setup rbenv to manage Ruby environments
+export PATH="$HOME/.rbenv/bin:$PATH"
 if which rbenv > /dev/null; then
-  export PATH="$HOME/.rbenv/bin:$PATH"
   eval "$(rbenv init -)"
 fi
 
