@@ -38,7 +38,7 @@ for path_candidate in /opt/local/sbin \
   ~/.cargo/bin \
   ~/.rbenv/bin \
   ~/bin \
-  $GOPATH \
+  $GOPATH/bin \
   $GOROOT/bin
 do
   if [ -d ${path_candidate} ]; then
@@ -161,28 +161,33 @@ fi
 
 # Setup jenv to manage JAVA environments
 export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
+#eval "$(jenv init -)"
+jenv() {
+  eval "$(command jenv init -)"
+  jenv "$@"
+}
 
 # Setup pyenv to manage Python environments
-export PATH="$HOME/.pyenv/bin:$PATH"
+# export PATH="$HOME/.pyenv/bin:$PATH"
 if which pyenv > /dev/null; then 
   eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
+#   eval "$(pyenv virtualenv-init -)"
+
+#   if which pyenv-virtualenv-init > /dev/null; then 
+#     pyenv virtualenvwrapper_lazy
+#   fi
 fi
 
-if which pyenv-virtualenv-init > /dev/null; then 
-  pyenv virtualenvwrapper_lazy
-fi
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 
 # setup rbenv to manage Ruby environments
-export PATH="$HOME/.rbenv/bin:$PATH"
-if which rbenv > /dev/null; then
-  eval "$(rbenv init -)"
-fi
+# export PATH="$HOME/.rbenv/bin:$PATH"
+# if which rbenv > /dev/null; then
+#   eval "$(rbenv init -)"
+# fi
 
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -411,3 +416,6 @@ elif type compctl &>/dev/null; then
   compctl -K _npm_completion npm
 fi
 ###-end-npm-completion-###
+
+# Adding direnv tool
+eval "$(direnv hook zsh)"
