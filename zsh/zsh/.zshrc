@@ -47,7 +47,8 @@ for path_candidate in /opt/local/sbin \
   ~/.cargo/bin \
   ~/.rbenv/bin \
   ~/bin \
-  ~/src/gocode/bin
+  ~/src/gocode/bin \
+  ~/.pyenv/bin
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
@@ -81,6 +82,19 @@ load-our-ssh-keys() {
     done
   fi
 }
+
+# Before loading keys, ensure SSH Agent has started
+# https://code.visualstudio.com/docs/remote/troubleshooting#_setting-up-the-ssh-agent
+
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
+   if [ "$RUNNING_AGENT" = "0" ]; then
+        # Launch a new instance of the agent
+        ssh-agent -s &> .ssh/ssh-agent
+   fi
+   eval `cat .ssh/ssh-agent`
+fi
 
 load-our-ssh-keys
 
@@ -205,6 +219,22 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     done
   fi
 fi
+
+# Setup pyenv to manage Python environments
+#export PATH="$HOME/.pyenv/bin:$PATH"
+if which pyenv > /dev/null; then 
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+
+#   if which pyenv-virtualenv-init > /dev/null; then 
+#     pyenv virtualenvwrapper_lazy
+#   fi
+fi
+
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/Devel
+export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 
 # deal with screen, if we're using it - courtesy MacOSXHints.com
 # Login greeting ------------------
