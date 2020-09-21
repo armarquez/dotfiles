@@ -1,0 +1,10 @@
+#!/bin/bash
+##
+# Copyright 2020 Anthony Marquez <@boogeymarquez>
+#
+# BSD licensed, see LICENSE.txt in this repository.
+
+# icalBuddy
+if [[ -x /usr/local/bin/icalBuddy ]]; then
+  alias today="icalBuddy -f -sc -eep \"notes\" eventsToday"
+fi
