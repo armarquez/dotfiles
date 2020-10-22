@@ -47,8 +47,7 @@ for path_candidate in /opt/local/sbin \
   ~/.cargo/bin \
   ~/.rbenv/bin \
   ~/bin \
-  ~/src/gocode/bin \
-  ~/.pyenv/bin
+  ~/src/gocode/bin
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
@@ -219,22 +218,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     done
   fi
 fi
-
-# Setup pyenv to manage Python environments
-#export PATH="$HOME/.pyenv/bin:$PATH"
-if which pyenv > /dev/null; then 
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
-
-#   if which pyenv-virtualenv-init > /dev/null; then 
-#     pyenv virtualenvwrapper_lazy
-#   fi
-fi
-
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/Devel
-export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 
 # deal with screen, if we're using it - courtesy MacOSXHints.com
 # Login greeting ------------------
