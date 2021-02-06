@@ -6,11 +6,18 @@
 
 # Setting up Golang environment variables
 export GOPATH=$HOME/golang
-export GOROOT=/usr/local/opt/go/libexec
 export GOBIN=$GOPATH/bin
+
+# Mac specific installed with homebrew
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export GOROOT=/usr/local/opt/go/libexec
+else
+  export GOROOT=/usr/local/go
+fi
 
 # Conditional PATH additions
 for path_candidate in $HOME/.pyenv/bin \
+  /usr/local/go/bin \
   $GOPATH/bin
 do
   if [ -d ${path_candidate} ]; then
