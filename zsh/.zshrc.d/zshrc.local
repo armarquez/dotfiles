@@ -58,5 +58,12 @@ if type jenv > /dev/null; then
     }
 fi
 
+# Adding nodenv
+if which nodenv > /dev/null; then 
+  eval "$(nodenv init -)"
+fi
+
 # Adding direnv tool
-eval "$(direnv hook zsh)"
+if which direnv > /dev/null; then 
+  eval "$(direnv hook zsh)"
+fi
