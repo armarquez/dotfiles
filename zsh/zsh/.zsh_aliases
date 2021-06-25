@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 #
-# Only including a shebang to trigger Sublime Text to use shell syntax highlighting
+# Only including a shebang to trigger editors to use shell syntax highlighting
 #
-# Copyright 2006-2018 Joseph Block <jpb@unixorn.net>
+# Copyright 2006-2021 Joseph Block <jpb@unixorn.net>
 #
 # BSD licensed, see LICENSE.txt in this repository.
 
@@ -15,16 +15,15 @@ if [[ -x /usr/local/bin/subl ]]; then
   alias s="subl"
 fi
 
-# yes, these tests are ugly. They do however, work.
+# Yes, these tests are ugly. They do however, work.
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  # do OS X specific things
-
+  # do macOS specific things
   alias top="TERM=vt100 top"
 else
   alias cputop="top -o cpu"
   alias l-d="ls -lad"
-  alias l="ls -la"
-  alias ll="ls -la | less"
+  alias l="ls -lah"
+  alias ll="ls -lah | less"
 fi
 
 if [[ "$(uname -s)" == "Linux" ]]; then
@@ -34,8 +33,18 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   alias ll="ls -lFa | TERM=vt100 less"
 fi
 
+# Set up colorized ls when grc is present
+# shellcheck disable=SC2154
+if (( $+commands[grc] )); then
+  alias ls="gls -F --color"
+  alias l="gls -lAh --color"
+  alias ll="gls -l --color"
+  alias la='gls -A --color'
+fi
+
 export CVS_RSH=ssh
 
+# shellcheck disable=SC2142
 alias historysummary="history | awk '{a[\$2]++} END{for(i in a){printf \"%5d\t%s\n\",a[i],i}}' | sort -rn | head"
 
 if [ -x /bin/vim ]; then
@@ -76,6 +85,7 @@ alias external_ip="curl -s icanhazip.com"
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 # Show laptop's IP addresses
+# shellcheck disable=2139
 alias ips="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+\.\d+)/ && print $1'"
 
 alias reattach="screen -r"
@@ -151,6 +161,7 @@ alias ...="cd ../.."
 
 # Honor old .zsh_aliases.local customizations, but print depecation warning.
 if [ -f ~/.zsh_aliases.local ]; then
+  # shellcheck disable=SC1090
   source ~/.zsh_aliases.local
   echo ".zsh_aliases.local is deprecated. Make entries in files in ~/.zshrc.d instead."
 fi
