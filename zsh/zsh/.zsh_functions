@@ -66,9 +66,6 @@ function man() {
       man "$@"
 }
 
-# From commandlinefu.com
-function watch() { t=$1; shift; while test :; do clear; date=$(date); echo -e "Every $ts: $@ \t\t\t\t $date"; $@; sleep $t; done }
-
 # scp file to machine you're sshing into this machine from
 function mecp() {
   scp "$@" ${SSH_CLIENT%% *}:~/Downloads/;
