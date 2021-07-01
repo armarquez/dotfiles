@@ -4,9 +4,17 @@
 #
 # BSD licensed, see LICENSE.txt in this repository.
 
+# Check if a command exists
+has() {
+  which "$@" > /dev/null 2>&1
+}
+
 # Setting up Golang environment variables
 export GOPATH=$HOME/golang
 export GOBIN=$GOPATH/bin
+
+# Setting up pyenv environment variables
+export PYENV_ROOT=$HOME/.pyenv
 
 # Mac specific installed with homebrew
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -16,9 +24,10 @@ else
 fi
 
 # Conditional PATH additions
-for path_candidate in $HOME/.pyenv/bin \
+for path_candidate in $PYENV_ROOT/bin \
   /usr/local/go/bin \
-  $GOPATH/bin
+  $GOPATH/bin \
+  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
@@ -27,13 +36,14 @@ done
 
 # Setup pyenv to manage Python environments
 #export PATH="$HOME/.pyenv/bin:$PATH"
-if which pyenv > /dev/null; then 
+if has pyenv > /dev/null; then 
+  eval "$(pyenv init --path)"
   eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
 
-#   if which pyenv-virtualenv-init > /dev/null; then 
+  if has pyenv-virtualenv-init > /dev/null; then 
+    eval "$(pyenv virtualenv-init -)"
 #     pyenv virtualenvwrapper_lazy
-#   fi
+  fi
 fi
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
@@ -58,12 +68,33 @@ if type jenv > /dev/null; then
     }
 fi
 
+# setup rbenv to manage Ruby environments
+if has rbenv > /dev/null; then
+  eval "$(rbenv init -)"
+fi
+
+
 # Adding nodenv
-if which nodenv > /dev/null; then 
+if has nodenv > /dev/null; then 
   eval "$(nodenv init -)"
 fi
 
 # Adding direnv tool
-if which direnv > /dev/null; then 
+if has direnv > /dev/null; then 
   eval "$(direnv hook zsh)"
 fi
+
+
+#####################################
+########## AIRBNB SPECIFIC ##########
+#####################################
+
+unset -f watch
+unset -f k
+source ~/.airlab/shellhelper.sh
+export ONETOUCHGEN_LDAP_USER=anthony_marquez
+export ONETOUCHGEN_ACCEPT_EULA=y
+
+###########
+### END ###
+###########

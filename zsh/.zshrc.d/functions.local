@@ -1,0 +1,64 @@
+#!/bin/bash
+##
+# Copyright 2020 Anthony Marquez <@boogeymarquez>
+#
+# BSD licensed, see LICENSE.txt in this repository
+
+# Check if a command exists
+has() {
+  which "$@" > /dev/null 2>&1
+}
+
+# General Update
+function update_brew() {
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        if has brew; then
+            brew update
+            brew upgrade
+        fi
+    fi
+}
+
+#####################################
+########## AIRBNB SPECIFIC ##########
+#####################################
+
+# Updating AirBnB Tech Stack
+# Need to be on VPN
+function update_airbnb() {
+    if has yk; then
+        # Prompt for passphrase so we can access git.musta.ch
+        yk
+        
+        # Update homebrew
+        update_brew
+        
+        # Update AirBnB specific tooling
+        if has airlab; then
+            # Update airlab tools (specifically kube-gen)
+            airlab update
+            
+            # Kubernetes certificate access using IAM
+            if has k; then
+                AWS_PROFILE_NOMFA=airbnb-users-kubernetes k certs-iam
+            fi
+        fi
+    fi
+}
+
+###########s
+### END ###
+###########
+
+function yaateeh(){
+    # Update your AirBnB stack
+    update_airbnb
+    
+    # Separator
+    # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+    echo "\n"
+    echo "$(tput bold)$(tput setaf 5)$(tput setab 0)## WHAT'S ON YOUR AGENDA FOR TODAY? ##$(tput sgr 0)\n"
+    
+    # Output today's agenda
+    today
+}
