@@ -92,7 +92,7 @@ load-starter-plugin-list() {
   if [ $(uname -a | grep -ci Darwin) = 1 ]; then
     # Load OSX-specific plugins
     zgen oh-my-zsh plugins/brew
-    zgen oh-my-zsh plugins/osx
+    zgen oh-my-zsh plugins/macos
   fi
 
   # A set of shell functions to make it easy to install small apps and

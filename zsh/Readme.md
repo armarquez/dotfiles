@@ -11,34 +11,36 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [Announcement](#announcement)
-- [Installation](#installation)
-  - [Prerequisites](#prerequisites)
-    - [Fonts](#fonts)
-  - [OS-specific setup](#os-specific-setup)
-    - [macOS](#macos)
-    - [Linux](#linux)
-  - [Set up Zgenom and the starter kit](#set-up-zgenom-and-the-starter-kit)
-- [Contents of the kit](#contents-of-the-kit)
-  - [Included plugins](#included-plugins)
-- [Customizing the kit](#customizing-the-kit)
-  - [Behavior toggles](#behavior-toggles)
-  - [Functions and Aliases](#functions-and-aliases)
-  - [I like a plugin, but the aliases it installs overwrite other commands or aliases](#i-like-a-plugin-but-the-aliases-it-installs-overwrite-other-commands-or-aliases)
-  - [ZSH options](#zsh-options)
-  - [Self-update Settings](#self-update-settings)
-  - [Changing the plugin list](#changing-the-plugin-list)
-  - [Disabling zmv](#disabling-zmv)
-  - [Disabling oh-my-zsh](#disabling-oh-my-zsh)
-- [FAQ](#faq)
-  - [How do I reconfigure the prompt?](#how-do-i-reconfigure-the-prompt)
-  - [I added a new completion plugin and it isn't working](#i-added-a-new-completion-plugin-and-it-isnt-working)
-  - [I get a git error when I try to update the kit](#i-get-a-git-error-when-i-try-to-update-the-kit)
-  - [GNU stow complains with a warning that stowing zsh would cause conflicts](#gnu-stow-complains-with-a-warning-that-stowing-zsh-would-cause-conflicts)
-- [Other Resources](#other-resources)
-  - [ZSH](#zsh)
-  - [Dotfiles in general](#dotfiles-in-general)
-  - [Vim](#vim)
+- [ZSH Quickstart Kit](#zsh-quickstart-kit)
+  - [Table of Contents](#table-of-contents)
+  - [Announcement](#announcement)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+      - [Fonts](#fonts)
+    - [OS-specific setup](#os-specific-setup)
+      - [macOS](#macos)
+      - [Linux](#linux)
+    - [Set up Zgenom and the starter kit](#set-up-zgenom-and-the-starter-kit)
+  - [Contents of the kit](#contents-of-the-kit)
+    - [Included plugins](#included-plugins)
+  - [Customizing the kit](#customizing-the-kit)
+    - [Behavior toggles](#behavior-toggles)
+    - [Functions and Aliases](#functions-and-aliases)
+    - [I like a plugin, but the aliases it installs overwrite other commands or aliases](#i-like-a-plugin-but-the-aliases-it-installs-overwrite-other-commands-or-aliases)
+    - [ZSH options](#zsh-options)
+    - [Self-update Settings](#self-update-settings)
+    - [Changing the plugin list](#changing-the-plugin-list)
+    - [Disabling zmv](#disabling-zmv)
+    - [Disabling oh-my-zsh](#disabling-oh-my-zsh)
+  - [FAQ](#faq)
+    - [How do I reconfigure the prompt?](#how-do-i-reconfigure-the-prompt)
+    - [I added a new completion plugin and it isn't working](#i-added-a-new-completion-plugin-and-it-isnt-working)
+    - [I get a git error when I try to update the kit](#i-get-a-git-error-when-i-try-to-update-the-kit)
+    - [GNU stow complains with a warning that stowing zsh would cause conflicts](#gnu-stow-complains-with-a-warning-that-stowing-zsh-would-cause-conflicts)
+  - [Other Resources](#other-resources)
+    - [ZSH](#zsh)
+    - [Dotfiles in general](#dotfiles-in-general)
+    - [Vim](#vim)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -164,7 +166,7 @@ The quickstart kit also uses `zgenom` to load oh-my-zsh and these plugins:
 * colored-man
 * git
 * github
-* osx - this will only be loaded on macOS
+* macos - this will only be loaded on macOS
 * pip
 * python
 * rsync

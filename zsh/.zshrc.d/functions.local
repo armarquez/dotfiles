@@ -9,12 +9,57 @@ has() {
   which "$@" > /dev/null 2>&1
 }
 
+# Clean up dead branches
+# From https://gist.git.musta.ch/bruce-sherrod/ad232024768413dad95f2a009b39852c
+function delete_dead_branches() {
+    
+    # Thanks Toland.Hon@airbnb.com for finding this:
+    # https://github.com/not-an-aardvark/git-delete-squashed
+
+    git checkout -q master
+
+    git for-each-ref refs/heads/ "--format=%(refname:short)" | while read -r branch; do
+        mergebase=$(git merge-base master "$branch")
+        mergepoint=$(git rev-parse "$branch^{tree}")
+        tempcommit=$(git commit-tree "$mergepoint" -p "$mergebase" -m _)
+        cherry=$(git cherry master "$tempcommit")
+        if [[ $cherry == "-"* ]] ; then
+        if [ "$1" == "-f" ]; then
+            git branch -D "$branch"
+        else
+            echo git branch -D "$branch"
+        fi
+        fi
+    done
+
+    git checkout -q -
+}
+
 # General Update
 function update_brew() {
     if [[ "$(uname -s)" == "Darwin" ]]; then
         if has brew; then
             brew update
             brew upgrade
+        fi
+    fi
+}
+
+# Brew switch is deprecated, so here is an alternative specified here: https://github.com/Homebrew/discussions/discussions/339#discussioncomment-350814
+
+function brew_switch() {
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        if has brew; then
+            pkg=$1
+            version=$2
+
+            brew unlink "$pkg"
+            (
+                pushd "$(brew --prefix)/opt"
+                rm -f "$pkg"
+                ln -s "../Cellar/$pkg/$version" "$pkg"
+            )
+            brew link "$pkg"
         fi
     fi
 }
@@ -35,20 +80,21 @@ function update_airbnb() {
         
         # Update AirBnB specific tooling
         if has airlab; then
+            # Update AWS session token for default role
+            if has remfa; then
+                remfa --aws-role default
+            fi
+            
             # Update airlab tools (specifically kube-gen)
             airlab update
             
             # Kubernetes certificate access using IAM
             if has k; then
                 AWS_PROFILE_NOMFA=airbnb-users-kubernetes k certs-iam
-            fi
+            fi            
         fi
     fi
 }
-
-###########s
-### END ###
-###########
 
 function yaateeh(){
     # Update your AirBnB stack
@@ -62,3 +108,11 @@ function yaateeh(){
     # Output today's agenda
     today
 }
+
+function gwr () {
+    $(git rev-parse --show-toplevel)/gradlew $@
+}
+
+###########
+### END ###
+###########
