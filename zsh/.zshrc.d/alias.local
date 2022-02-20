@@ -29,7 +29,7 @@ fi
 ########## AIRBNB SPECIFIC ##########
 #####################################
 
-alias just_my_branches='git config --add remote.origin.fetch "+refs/heads/amarquez--*:refs/remote/origin/amarquez--*"'
+# alias just_my_branches='git config --add remote.origin.fetch "+refs/heads/amarquez--*:refs/remote/origin/amarquez--*"'
 
 ###########
 ### END ###
