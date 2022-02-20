@@ -85,6 +85,7 @@ if has direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
+# This is not commented out for `work-airbnb` branch
 #####################################
 ########## AIRBNB SPECIFIC ##########
 #####################################

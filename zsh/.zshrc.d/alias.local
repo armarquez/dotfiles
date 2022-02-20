@@ -24,6 +24,7 @@ if has python3 > /dev/null; then
     print (ul.quote_plus(sys.argv[1]))"'
 fi
 
+# This is not commented out for `work-airbnb` branch
 #####################################
 ########## AIRBNB SPECIFIC ##########
 #####################################

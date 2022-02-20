@@ -64,6 +64,7 @@ function brew_switch() {
     fi
 }
 
+# This is not commented out for `work-airbnb` branch
 #####################################
 ########## AIRBNB SPECIFIC ##########
 #####################################
