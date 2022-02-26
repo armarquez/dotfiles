@@ -25,10 +25,10 @@ fi
 
 # Conditional PATH additions
 for path_candidate in $PYENV_ROOT/bin \
+  ~/.local/bin \
   /usr/local/go/bin \
   $GOPATH/bin \
-  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" \
-  /Users/anthony_marquez/.local/bin
+  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" 
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
