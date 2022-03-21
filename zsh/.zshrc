@@ -21,7 +21,7 @@
 # quickstart kit.
 
 # Check if a command exists
-has() {
+function can_haz() {
   which "$@" > /dev/null 2>&1
 }
 
@@ -73,8 +73,16 @@ done
 
 # Deal with brew if it's installed. Note - brew can be installed outside
 # of /usr/local, so add its bin and sbin directories.
-if has brew; then
+if can_haz brew; then
   BREW_PREFIX=$(brew --prefix)
+  if [[ -d "${BREW_PREFIX}/bin" ]]; then
+    export PATH="$PATH:${BREW_PREFIX}/bin"
+  fi
+  if [[ -d "${BREW_PREFIX}/sbin" ]]; then
+    export PATH="$PATH:${BREW_PREFIX}/sbin"
+  fi
+elif [[ -d /opt/homebrew ]]; then
+  BREW_PREFIX=/opt/homebrew
   if [[ -d "${BREW_PREFIX}/bin" ]]; then
     export PATH="$PATH:${BREW_PREFIX}/bin"
   fi
@@ -94,7 +102,15 @@ export LSCOLORS='Exfxcxdxbxegedabagacad'
 export LS_COLORS='di=1;34;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
 
 load-our-ssh-keys() {
-  eval `ssh-agent -s` &> /dev/null
+  if [ -z "$SSH_AUTH_SOCK" ]; then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="$(ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]')"
+   if [ "$RUNNING_AGENT" = "0" ]; then
+        # Launch a new instance of the agent
+        ssh-agent -s &> ~/.ssh/ssh-agent
+   fi
+   eval $(cat ~/.ssh/ssh-agent)
+  fi
   # Fun with SSH
   if [ $(ssh-add -l | grep -c "The agent has no identities." ) -eq 1 ]; then
     if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -103,9 +119,17 @@ load-our-ssh-keys() {
       #
       # You can use ssh-add -K /path/to/key to store pass phrases into
       # the macOS keychain
-      
-      # Load all ssh keys that have pass phrases stored in macOS keychain
-      ssh-add -qA
+
+      # macOS Monterey deprecates the -K and -A flags. They have been replaced
+      # by the --apple-use-keychain and --apple-load-keychain flags.
+
+      # check if Monterey or higher
+      # https://scriptingosx.com/2020/09/macos-version-big-sur-update/
+      if [[ $(sw_vers -buildVersion) > "21" ]]; then
+        # Load all ssh keys that have pass phrases stored in macOS keychain using new flags
+        ssh-add --apple-load-keychain
+      else ssh-add -qA
+      fi
     fi
 
     for key in $(find ~/.ssh -type f -a \( -name '*id_rsa' -o -name '*id_dsa' -o -name '*id_ecdsa' \))
@@ -293,7 +317,7 @@ if [[ -r "$GRC_SETUP" ]]; then
 fi
 unset GRC_SETUP
 
-if (( $+commands[grc] )) 
+if (( $+commands[grc] ))
 then
   function ping5(){
     grc --color=auto ping -c 5 "$@"
@@ -318,13 +342,6 @@ if [[ -d ~/.zsh-completions ]]; then
       echo "Can't read $completion"
     fi
   done
-fi
-
-# Honor old .zshrc.local customizations, but print deprecation warning.
-if [ -f ~/.zshrc.local ]; then
-  source ~/.zshrc.local
-  echo '~/.zshrc.local is deprecated - use files in ~/.zshrc.d instead.'
-  echo 'The zsh-quickstart-kit will no longer load ~/.zshrc.local after 2021-10-31'
 fi
 
 # Load zmv
@@ -389,8 +406,20 @@ _update-zsh-quickstart() {
       if [[ -f "${gitroot}/.gitignore" ]]; then
         if [[ $(grep -c zsh-quickstart-kit "${gitroot}/.gitignore") -ne 0 ]]; then
           echo "---- updating ----"
+          # Cope with switch from master to main
+          zqs_current_branch=$(git rev-parse --abbrev-ref HEAD)
+          git fetch
+          # Determine the repo default branch and switch to it
+          zqs_default_branch="$(git remote show origin | grep 'HEAD branch' | awk '{print $3}')"
+          if [[ "$zqs_default_branch" != "$zqs_current_branch" ]]; then
+            echo "The ZSH Quickstart Kit has switched default branches to $zqs_default_branch"
+            echo "Changing branches in your local checkout from $zqs_current_branch to $zqs_default_branch"
+            git checkout "$zqs_default_branch"
+          fi
           git pull
           date +%s >! ~/.zsh-quickstart-last-update
+          unset zqs_default_branch
+          unset zqs_current_branch
         fi
       else
         echo 'No quickstart marker found, is your quickstart a valid git checkout?'
@@ -413,7 +442,7 @@ _check-for-zsh-quickstart-update() {
 
 if [[ ! -z "$QUICKSTART_KIT_REFRESH_IN_DAYS" ]]; then
   _check-for-zsh-quickstart-update
-  unset QUICKSTART_KIT_REFRESH_IN_DAYS
+  # unset QUICKSTART_KIT_REFRESH_IN_DAYS
 fi
 
 # Fix bracketed paste issue
@@ -447,3 +476,34 @@ if [[ -z "ZSH_QUICKSTART_SKIP_TRAPINT" ]]; then
     return $((128+$1))
   }
 fi
+
+if ! can_haz fzf; then
+  echo "$?"
+  echo "You'll need to install fzf or your history search will be broken."
+  echo
+  echo
+  echo "Install instructions can be found at https://github.com/junegunn/fzf/"
+fi
+
+function zqs-help() {
+  echo "The zqs command allows you to manipulate your ZSH quickstart."
+  echo
+  echo "options:"
+  echo "zqs check-for-updates - Update the quickstart kit if it has been longer than $QUICKSTART_KIT_REFRESH_IN_DAYS days since the last update."
+  echo "zqs selfupdate - Force an immediate update of the quickstart kit"
+}
+
+function zqs() {
+  case "$1" in
+    'check-for-updates')
+      _check-for-zsh-quickstart-update
+      ;;
+    'selfupdate')
+      _update-zsh-quickstart
+      ;;
+    *)
+      zqs-help
+      ;;
+
+  esac
+}

@@ -2,9 +2,9 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Funixorn%2Fzsh-quickstart-kit%2Fbadge&style=plastic)](https://actions-badge.atrox.dev/unixorn/zsh-quickstart-kit/goto)
-[![Code Climate](https://codeclimate.com/github/unixorn/zsh-quickstart-kit/badges/gpa.svg)](https://codeclimate.com/github/unixorn/zsh-quickstart-kit)
 [![GitHub stars](https://img.shields.io/github/stars/unixorn/zsh-quickstart-kit.svg)](https://github.com/unixorn/zsh-quickstart-kit/stargazers)
-[![Issue Count](https://codeclimate.com/github/unixorn/zsh-quickstart-kit/badges/issue_count.svg)](https://codeclimate.com/github/unixorn/zsh-quickstart-kit)
+![Awesomebot](https://github.com/unixorn/zsh-quickstart-kit/actions/workflows/awesomebot.yml/badge.svg)
+![Superlinter](https://github.com/unixorn/zsh-quickstart-kit/actions/workflows/superlinter.yml/badge.svg)
 [![GitHub last commit (branch)](https://img.shields.io/github/last-commit/unixorn/zsh-quickstart-kit/master.svg)](https://github.com/unixorn/zsh-quickstart-kit)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -16,6 +16,7 @@
   - [Prerequisites](#prerequisites)
     - [Fonts](#fonts)
   - [OS-specific setup](#os-specific-setup)
+    - [fzf](#fzf)
     - [macOS](#macos)
     - [Linux](#linux)
   - [Set up Zgenom and the starter kit](#set-up-zgenom-and-the-starter-kit)
@@ -35,6 +36,8 @@
   - [I added a new completion plugin and it isn't working](#i-added-a-new-completion-plugin-and-it-isnt-working)
   - [I get a git error when I try to update the kit](#i-get-a-git-error-when-i-try-to-update-the-kit)
   - [GNU stow complains with a warning that stowing zsh would cause conflicts](#gnu-stow-complains-with-a-warning-that-stowing-zsh-would-cause-conflicts)
+  - [_arguments:comparguments:325: can only be called from completion function](#_argumentscomparguments325-can-only-be-called-from-completion-function)
+  - [Could not open a connection to your authentication agent](#could-not-open-a-connection-to-your-authentication-agent)
 - [Other Resources](#other-resources)
   - [ZSH](#zsh)
   - [Dotfiles in general](#dotfiles-in-general)
@@ -56,10 +59,11 @@ This quickstart includes the [powerlevel10k](https://github.com/romkatv/powerlev
 Here are a few good Powerline-compatible fonts:
 
 * [Awesome Terminal Fonts](https://github.com/gabrielelana/awesome-terminal-fonts) - A family of fonts that includes some nice monospaced Icons.
+* [Cascadia Code](https://github.com/microsoft/cascadia-code) - Microsoft's Cascadia Code
 * [Fantasque Awesome Font](https://github.com/ztomer/fantasque_awesome_powerline) - A nice monospaced font, patched with Font-Awesome, Octoicons and Powerline-Glyphs.
 * [Fira Mono](https://github.com/mozilla/Fira) - Mozilla's Fira type family.
 * [Hack](http://sourcefoundry.org/hack/) - Another Powerline-compatible font designed specifically for source code and terminal usage.
-* [Input Mono](http://input.fontbureau.com/) - A family of fonts designed specifically for code. It offers both monospaced and proportional fonts and includes Powerline glyphs.
+* [Input Mono](https://input.djr.com/) - A family of fonts designed specifically for code. It offers both monospaced and proportional fonts and includes Powerline glyphs.
 * [Iosevka](https://be5invis.github.io/Iosevka/) - Iosevka is an open source slender monospace sans-serif and slab-serif typeface inspired by [Pragmata Pro](http://www.fsd.it/fonts/pragmatapro.htm), [M+](http://mplus-fonts.osdn.jp/) and [PF DIN Mono](http://www.parachute.gr/typefaces/allfonts/din-mono-pro), designed to be the ideal font for programming.
 * [Monoid](http://larsenwork.com/monoid/) - Monoid is customizable and optimized for coding with bitmap-like sharpness at 15px line-height even on low res displays.
 * [Mononoki](https://madmalik.github.io/mononoki/) - Mononoki is a typeface by Matthias Tellen, created to enhance code formatting.
@@ -70,28 +74,34 @@ Here are a few good Powerline-compatible fonts:
 
 ### OS-specific setup
 
+#### fzf
+
+You'll need to install [fzf](https://github.com/junegunn/fzf/) to enable the enhanced history search. Manual install instructions can be found at [fzf](https://github.com/junegunn/fzf), and os-specific instructions below.
+
 #### macOS
 
-1. Download iTerm2 from [http://www.iterm2.com](http://www.iterm2.com). It is considerably nicer than the stock Terminal application that comes with macOS. Please note - there is an RCE flaw in all versions of iTerm 2 before 3.3.6, so update if you're using an affected version.
+1. Download iTerm2 from [http://www.iterm2.com](http://www.iterm2.com) (optional). In my opinion it is considerably nicer than the stock Terminal application that comes with macOS. Please note - there is an RCE flaw in all versions of iTerm 2 before 3.3.6, so update if you're using an affected version.
 2. Install the current version of Homebrew from [http://brew.sh/](http://brew.sh/).
 3. Install GNU Stow with `brew install stow`
-4. Homebrew inevitably has a newer version of `zsh` than the one Apple ships with the OS, so `brew install zsh` to install it.
-5. Switch your shell to `zsh`:
+4. Homebrew has a newer version of `zsh` than the one Apple shipped with the OS before 11.6, so `brew install zsh` to install it.
+5. Switch your shell to `zsh` if necessary - Apple has defaulted the shell for new users to `zsh` since macOS Catalina (10.15):
     1. System Preferences -> Users & Groups.
     2. Unlock the preferences
     3. Select your user
     4. Select advanced options
-    5. Set your login shell to `/bin/zsh` (or `/usr/local/bin/zsh` if you decided to use the newer version packaged by `brew`)
+    5. Set your login shell to `/bin/zsh` (or `/usr/local/bin/zsh` if you decided to use the version packaged by `brew`)
 6. Install some Powerline-compatible or NerdFont fonts from one of the links in the Fonts section above.
     1. In iTerm 2, go to Preferences->Profile in your iTerm 2 preferences, then select one of the Powerline-compatible fonts you just installed.
     2. **Make sure you also specify a Powerline-compatible font for non-ASCII in your iTerm 2 preferences or the prompt separators and branch glyphs will show up garbled**.
+7. Install `fzf` with `brew install fzf`
 
 #### Linux
 
 1. Switch your shell to `zsh` with `chsh -s /bin/zsh`
-2. Install GNU Stow - `yum install -y stow` on Red Hat / CentOS systems, `apt-get -y install stow` on Debian / Ubuntu.
-3. Install the patched font in a valid X font path. Valid font paths can be listed with `xset q`: `mv YourChosenPowerlineFont.otf ~/.fonts`
-4. Update the font cache for the path the font was installed in (root privileges may be needed for updating the font cache for some paths): `fc-cache -vf ~/.fonts/`
+2. Install GNU Stow - `sudo yum install -y stow` on Red Hat / CentOS systems, `sudo apt-get -y install stow` on Debian / Ubuntu.
+3. Install `fzf` - `sudo apt-get install -y fzf` on Debian / Ubuntu, do a manual install on Red Hat / Centos - instructions are at [fzf](https://github.com/junegunn/fzf).
+4. Install the patched font in a valid X font path. Valid font paths can be listed with `xset q`: `mv YourChosenPowerlineFont.otf ~/.fonts`
+5. Update the font cache for the path the font was installed in (root privileges may be needed for updating the font cache for some paths): `fc-cache -vf ~/.fonts/`
 
 After installing a Nerdfont or Powerline-compatible font, you will also need to configure your terminal emulator to use your selected Powerline-compatible font. The name of the correct font usually ends with *for Powerline*.
 
@@ -200,7 +210,11 @@ Make a file in `~/.zshrc.d` named something like `999-reset-aliases`. Since thos
 
 ### ZSH options
 
-The quickstart kit does an opinionated (i.e. my way) setup of ZSH options and adds some functions and aliases I like on my systems. However, `~/.zshrc.d` is processed _after_ the quickstart sets its aliases, functions and ZSH options, so if you don't care for something as set up in the quickstart, you can override the offending item in a shell fragment file there.
+The quickstart kit does an opinionated (i.e. my way) setup of ZSH options and adds some functions and aliases I like on my systems.
+
+However, `~/.zshrc.d` is processed _after_ the quickstart sets its aliases, functions and ZSH options, so if you don't care for something as set up in the quickstart, you can override the offending item in a shell fragment file there.
+
+As of 2021-11-13, I've added a `zqs` command to start exposing some of the tunables in a more user-friendly way.
 
 ### Self-update Settings
 
@@ -210,13 +224,13 @@ The quickstart kit will automatically check for updates every seven days. If you
 
 I've included what I think is a good starter set of ZSH plugins in this repository. However, everyone has their own preferences for their own environment.
 
-To make the list easier to customize without having to maintain a separate fork of the quickstart kit, if you create a file named `~/.zgen-local-plugins`, the `.zshrc` from this starter kit will source that **instead** of running the `load-starter-plugin-list` function defined in `~/.zgen-setup`.
+To make the list easier to customize without having to maintain a separate fork of the quickstart kit, if you create a file named `~/.zsh-quickstart-local-plugins`, the `.zshrc` from this starter kit will source that **instead** of running the `load-starter-plugin-list` function defined in `~/.zgen-setup`.
 
-**Using `~/.zgen-local-plugins` is not additive, it will _completely replace_ the kit-provided list of plugins.**
+**Using `~/.zsh-quickstart-local-plugins` is not additive, it will _completely replace_ the kit-provided list of plugins.**
 
-I realize that it would be a pain to create `.zgen-local-plugins` from scratch, so to make customizing your plugins easier, I've included a `.zgen-local-plugins-example` file at the root of the repository that will install the same plugin list that the kit does by default that you can use as a starting point for your own customizations.
+I realize that it would be a pain to create `.zsh-quickstart-local-plugins` from scratch, so to make customizing your plugins easier, I've included a `.zsh-quickstart-local-plugins-example` file at the root of the repository that will install the same plugin list that the kit does by default that you can use as a starting point for your own customizations.
 
-Copy that to your `$HOME/.zgen-local-plugins`, change the list and the next time you start a terminal session you'll get your plugin list loaded instead of the kit's defaults.
+Copy that to your `$HOME/.zsh-quickstart-local-plugins`, change the list and the next time you start a terminal session you'll get your plugin list loaded instead of the kit's defaults.
 
 ### Disabling zmv
 
@@ -271,6 +285,14 @@ All operations aborted.
 ```
 
 Per @jefheaton, this is caused when trying to replace an existing `.zshrc` file. He fixed it by closing `~` in Finder so Finder wouldn't create a `.DS_Store` file, deleting the existing `.DS_Store`, and then removing the old `.zshrc`. You may have to rename it first if ZSH is keeping the file open, then deleting it after closing all your Terminal/iTerm 2 windows.
+
+### _arguments:comparguments:325: can only be called from completion function
+
+This has been solved by running `zgen update` or switching to [zgenom](https://github.com/jandamm/zgenom). New users of the kit should already be running `zgenom`. Thanks @RonanJackson for reporting the fix.
+
+### Could not open a connection to your authentication agent
+
+Confirm that `ssh-agent` is running. If not, Rob Montero has a good [blog post](https://rob.cr/blog/using-ssh-agent-mac-os-x/) on setting up `ssh-agent` on macOS, and here are [instructions](https://wiki.archlinux.org/title/SSH_keys#Start_ssh-agent_with_systemd_user) for starting `ssh-agent` with `systemd` on Linux.
 
 ## Other Resources
 
