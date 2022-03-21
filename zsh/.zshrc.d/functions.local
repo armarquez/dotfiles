@@ -5,7 +5,7 @@
 # BSD licensed, see LICENSE.txt in this repository
 
 # Check if a command exists
-has() {
+function can_haz() {
   which "$@" > /dev/null 2>&1
 }
 
@@ -38,7 +38,7 @@ function delete_dead_branches() {
 # General Update
 function update_brew() {
     if [[ "$(uname -s)" == "Darwin" ]]; then
-        if has brew; then
+        if can_haz brew; then
             brew update
             brew upgrade
         fi
@@ -49,7 +49,7 @@ function update_brew() {
 
 function brew_switch() {
     if [[ "$(uname -s)" == "Darwin" ]]; then
-        if has brew; then
+        if can_haz brew; then
             pkg=$1
             version=$2
 
@@ -72,7 +72,7 @@ function brew_switch() {
 # Updating AirBnB Tech Stack
 # Need to be on VPN
 # function update_airbnb() {
-#     if has yk; then
+#     if can_haz yk; then
 #         # Prompt for passphrase so we can access git.musta.ch
 #         yk
         
@@ -80,9 +80,9 @@ function brew_switch() {
 #         update_brew
         
 #         # Update AirBnB specific tooling
-#         if has airlab; then
+#         if can_haz airlab; then
 #             # Update AWS session token for default role
-#             if has remfa; then
+#             if can_haz remfa; then
 #                 remfa --aws-role default
 #             fi
             
@@ -90,7 +90,7 @@ function brew_switch() {
 #             airlab update
             
 #             # Kubernetes certificate access using IAM
-#             if has k; then
+#             if can_haz k; then
 #                 AWS_PROFILE_NOMFA=airbnb-users-kubernetes k certs-iam
 #             fi            
 #         fi

@@ -5,7 +5,7 @@
 # BSD licensed, see LICENSE.txt in this repository.
 
 # Check if a command exists
-has() {
+function can_haz() {
   which "$@" > /dev/null 2>&1
 }
 
@@ -16,7 +16,7 @@ fi
 
 # URL decoding and encoding
 
-if has python3 > /dev/null; then 
+if can_haz python3 > /dev/null; then 
   alias urldecode='python3 -c "import sys, urllib.parse as ul; \
     print(ul.unquote_plus(sys.argv[1]))"'
 

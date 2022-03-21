@@ -5,7 +5,7 @@
 # BSD licensed, see LICENSE.txt in this repository.
 
 # Check if a command exists
-has() {
+function can_haz() {
   which "$@" > /dev/null 2>&1
 }
 
@@ -37,11 +37,11 @@ done
 
 # Setup pyenv to manage Python environments
 #export PATH="$HOME/.pyenv/bin:$PATH"
-if has pyenv > /dev/null; then 
+if can_haz pyenv > /dev/null; then 
   eval "$(pyenv init --path)"
   eval "$(pyenv init -)"
 
-  if has pyenv-virtualenv-init > /dev/null; then 
+  if can_haz pyenv-virtualenv-init > /dev/null; then 
     eval "$(pyenv virtualenv-init -)"
 #     pyenv virtualenvwrapper_lazy
   fi
@@ -70,18 +70,18 @@ if type jenv > /dev/null; then
 fi
 
 # setup rbenv to manage Ruby environments
-if has rbenv > /dev/null; then
+if can_haz rbenv > /dev/null; then
   eval "$(rbenv init -)"
 fi
 
 
 # Adding nodenv
-if has nodenv > /dev/null; then 
+if can_haz nodenv > /dev/null; then 
   eval "$(nodenv init -)"
 fi
 
 # Adding direnv tool
-if has direnv > /dev/null; then 
+if can_haz direnv > /dev/null; then 
   eval "$(direnv hook zsh)"
 fi
 
