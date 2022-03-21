@@ -25,10 +25,10 @@ fi
 
 # Conditional PATH additions
 for path_candidate in $PYENV_ROOT/bin \
+  ~/.local/bin \
   /usr/local/go/bin \
   $GOPATH/bin \
-  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" \
-  /Users/anthony_marquez/.local/bin
+  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" 
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
@@ -85,15 +85,16 @@ if has direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
+# This is not commented out for `work-airbnb` branch
 #####################################
 ########## AIRBNB SPECIFIC ##########
 #####################################
 
-unset -f watch
-unset -f k
-source ~/.airlab/shellhelper.sh
-export ONETOUCHGEN_LDAP_USER=anthony_marquez
-export ONETOUCHGEN_ACCEPT_EULA=y
+# unset -f watch
+# unset -f k
+# source ~/.airlab/shellhelper.sh
+# export ONETOUCHGEN_LDAP_USER=anthony_marquez
+# export ONETOUCHGEN_ACCEPT_EULA=y
 
 ###########
 ### END ###

@@ -24,11 +24,12 @@ if has python3 > /dev/null; then
     print (ul.quote_plus(sys.argv[1]))"'
 fi
 
+# This is not commented out for `work-airbnb` branch
 #####################################
 ########## AIRBNB SPECIFIC ##########
 #####################################
 
-alias just_my_branches='git config --add remote.origin.fetch "+refs/heads/amarquez--*:refs/remote/origin/amarquez--*"'
+# alias just_my_branches='git config --add remote.origin.fetch "+refs/heads/amarquez--*:refs/remote/origin/amarquez--*"'
 
 ###########
 ### END ###
