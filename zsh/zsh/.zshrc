@@ -307,7 +307,8 @@ if [[ -z "$LS_COLORS" ]]; then
 fi
 
 load-our-ssh-keys() {
-  if can_haz op; then export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+  if can_haz op && [[ "$(uname -s)" == "Darwin" ]]; then 
+    export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
   else
     # If keychain is installed let it take care of ssh-agent, else do it manually
   if can_haz keychain; then
