@@ -9,6 +9,7 @@ My config files for setting up my system
 - direnv
 - pygitup
 - tig
+
 ## zsh
 
 This is a git subtree of [zsh-quickstart-kit](https://github.com/unixorn/zsh-quickstart-kit). To update, follow the git subtree update strategy [outlined by Atlassian blog](https://www.atlassian.com/git/tutorials/git-subtree):
@@ -28,8 +29,8 @@ git subtree add --prefix zsh zsh-quickstart-kit main --squash
 The command to update the sub-project at a later date becomes:
 
 ```bash
-git fetch zsh-quickstart-kit master
-git subtree pull --prefix zsh zsh-quickstart-kit master --squash
+git fetch zsh-quickstart-kit main
+git subtree pull --prefix zsh zsh-quickstart-kit main --squash
 ```
 
 ### Adding zsh completions
