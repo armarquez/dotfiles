@@ -103,11 +103,14 @@ fi
 ########## AIRBNB SPECIFIC ##########
 #####################################
 
-# unset -f watch
-# unset -f k
-# source ~/.airlab/shellhelper.sh
-# export ONETOUCHGEN_LDAP_USER=anthony_marquez
-# export ONETOUCHGEN_ACCEPT_EULA=y
+unset -f watch
+unset -f k
+source ~/.airlab/shellhelper.sh
+export ONETOUCHGEN_LDAP_USER=anthony_marquez
+export ONETOUCHGEN_ACCEPT_EULA=y
+export DATA_DIR=/Users/anthony_marquez/dev/airbnb/data
+autoload -U compinit; compinit
+source <(yak completion zsh)
 
 ###########
 ### END ###
