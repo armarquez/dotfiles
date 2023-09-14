@@ -28,7 +28,7 @@ function can_haz() {
 
 # Fix weirdness with intellij
 if [[ -z "${INTELLIJ_ENVIRONMENT_READER}" ]]; then
-    export POWERLEVEL9K_INSTANT_PROMPT='quiet'
+  export POWERLEVEL9K_INSTANT_PROMPT='quiet'
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -307,26 +307,32 @@ if [[ -z "$LS_COLORS" ]]; then
 fi
 
 load-our-ssh-keys() {
-  if can_haz op; then export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+  if can_haz op; then
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+      export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+    fi
+    if [[ "$(uname -s)" == "Linux" ]]; then
+      export SSH_AUTH_SOCK=~/.1password/agent.sock
+    fi
   else
     # If keychain is installed let it take care of ssh-agent, else do it manually
-  if can_haz keychain; then
-    eval `keychain -q --eval`
-  else
-    if [ -z "$SSH_AUTH_SOCK" ]; then
-       # If user has keychain installed, let it take care of ssh-agent, else do it manually
-      # Check for a currently running instance of the agent
-       RUNNING_AGENT="$(ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]')"
-       if [ "$RUNNING_AGENT" = "0" ]; then
+    if can_haz keychain; then
+      eval `keychain -q --eval`
+    else
+      if [ -z "$SSH_AUTH_SOCK" ]; then
+        # If user has keychain installed, let it take care of ssh-agent, else do it manually
+        # Check for a currently running instance of the agent
+        RUNNING_AGENT="$(ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]')"
+        if [ "$RUNNING_AGENT" = "0" ]; then
           if [ ! -d ~/.ssh ] ; then
-          mkdir -p ~/.ssh
-        fi
-        # Launch a new instance of the agent
+            mkdir -p ~/.ssh
+          fi
+          # Launch a new instance of the agent
           ssh-agent -s &> ~/.ssh/ssh-agent
-       fi
-       eval $(cat ~/.ssh/ssh-agent)
+        fi
+        eval $(cat ~/.ssh/ssh-agent)
       fi
-  fi
+    fi
   fi
 
   local key_manager=ssh-add
@@ -370,7 +376,10 @@ if [[ -z "$SSH_CLIENT" ]] || can_haz keychain; then
   if [[ "$(_zqs-get-setting ssh-askpass-require)" == 'true' ]]; then
     zsh-quickstart-set-ssh-askpass-require
   fi
-  load-our-ssh-keys
+  load_ssh_keys="$(_zqs-get-setting load-ssh-keys true)"
+  if [[ "$load_ssh_keys" != "false" ]]; then
+    load-our-ssh-keys
+  fi
 fi
 
 # Load helper functions before we load zgenom setup
@@ -565,7 +574,12 @@ if can_haz exa; then
     EXA_TREE_IGNORE=".cache|cache|node_modules|vendor|.git"
   fi
 
-  alias l='exa -al --icons --git --time-style=long-iso --group-directories-first --color-scale'
+  if [[ "$(exa --help | grep -c git)" == 0 ]]; then
+    # Not every linux exa build has git support compiled in
+    alias l='exa -al --icons --time-style=long-iso --group-directories-first --color-scale'
+  else
+    alias l='exa -al --icons --git --time-style=long-iso --group-directories-first --color-scale'
+  fi
   alias ls='exa --group-directories-first'
 
   # Don't step on system-installed tree command
@@ -739,17 +753,19 @@ function zqs-help() {
   echo ""
   echo "Quickstart settings commands:"
   echo "zqs disable-bindkey-handling - Set the quickstart to not touch any bindkey settings. Useful if you're using another plugin to handle it."
-  echo "zqs enable-bindkey-handling - Set the quickstart to configure your bindkey settings. Default behavior."
+  echo "zqs enable-bindkey-handling - Set the quickstart to configure your bindkey settings. This is the default behavior."
   echo "zqs enable-control-c-decorator - Creates a TRAPINT function to display '^C' when you type control-c instead of being silent. Default behavior."
   echo "zqs disable-control-c-decorator - No longer creates a TRAPINT function to display '^C' when you type control-c."
   echo "zqs disable-omz-plugins - Set the quickstart to not load oh-my-zsh plugins if you're using the standard plugin list"
   echo "zqs enable-omz-plugins - Set the quickstart to load oh-my-zsh plugins if you're using the standard plugin list"
   echo "zqs enable-ssh-askpass-require - Set the quickstart to prompt for your ssh passphrase on the command line."
-  echo "zqs disable-ssh-askpass-require - Set the quickstart to prompt for your ssh passphrase via a gui program. Default behavior"
+  echo "zqs disable-ssh-askpass-require - Set the quickstart to prompt for your ssh passphrase via a gui program. This is the default behavior"
   echo "zqs disable-ssh-key-listing - Set the quickstart to not display all the loaded ssh keys"
-  echo "zqs enable-ssh-key-listing - Set the quickstart to display all the loaded ssh keys. Default behavior."
+  echo "zqs enable-ssh-key-listing - Set the quickstart to display all the loaded ssh keys. This is the default behavior."
+  echo "zqs disable-ssh-key-loading - Set the quickstart to not load your ssh keys. Useful if you're storing them in a yubikey."
+  echo "zqs enable-ssh-key-loading - Set the quickstart to load your ssh keys if they aren't already in an ssh agent. This is the default behavior."
   echo "zqs disable-zmv-autoloading - Set the quickstart to not run 'autoload -U zmv'. Useful if you're using another plugin to handle it."
-  echo "zqs enable-zmv-autoloading - Set the quickstart to run 'autoload -U zmv'. Default behavior."
+  echo "zqs enable-zmv-autoloading - Set the quickstart to run 'autoload -U zmv'. This is the default behavior."
   echo "zqs delete-setting SETTINGNAME - Remove a zqs setting file"
   echo "zqs get-setting SETTINGNAME [optional default value] - load a zqs setting"
   echo "zqs set-setting SETTINGNAME value - Set an arbitrary zqs setting"
@@ -796,6 +812,12 @@ function zqs() {
       ;;
     'disable-ssh-key-listing')
       _zqs-set-setting list-ssh-keys false
+      ;;
+    'disable-ssh-key-loading')
+      _zqs-set-setting load-ssh-keys false
+      ;;
+    'enable-ssh-key-loading')
+      _zqs-set-setting load-ssh-keys true
       ;;
     'selfupdate')
       _update-zsh-quickstart
