@@ -92,7 +92,14 @@ fi
 
 unset -f watch
 unset -f k
-source ~/.airlab/shellhelper.sh
+# Source Airlab's shell integration, if it exists.
+if [ -e ~/.airlab/shellhelper.sh ]; then
+  source ~/.airlab/shellhelper.sh
+fi
+# AIRLAB-DO-NOT-MODIFY section:ShellWrapper }}}
+
+export PATH="/usr/local/bin:$PATH"
+
 export ONETOUCHGEN_LDAP_USER=anthony_marquez
 export ONETOUCHGEN_ACCEPT_EULA=y
 export DATA_DIR=/Users/anthony_marquez/dev/airbnb/data
