@@ -27,8 +27,7 @@ fi
 for path_candidate in $PYENV_ROOT/bin \
   ~/.local/bin \
   /usr/local/go/bin \
-  $GOPATH/bin \
-  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" 
+  $GOPATH/bin 
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
@@ -83,6 +82,20 @@ fi
 # Adding direnv tool
 if can_haz direnv > /dev/null; then 
   eval "$(direnv hook zsh)"
+fi
+
+# Check if Visual Studio Code executable exists
+if [[ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]]; then
+    # Check if symbolic link already exists
+    if [[ ! -h "/usr/local/bin/code" ]]; then
+        # Create symbolic link
+        ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
+        # echo "Symbolic link for 'code' command created successfully."
+    else
+        # echo "Symbolic link '/usr/local/bin/code' already exists."
+    fi
+else
+    # echo "Visual Studio Code executable not found. Please install Visual Studio Code."
 fi
 
 # This is not commented out for `work-airbnb` branch
