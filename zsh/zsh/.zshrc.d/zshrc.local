@@ -111,7 +111,7 @@ fi
 #####################################
 
 unset -f watch
-unset -f k
+#unset -f k
 # Source Airlab's shell integration, if it exists.
 if [ -e ~/.airlab/shellhelper.sh ]; then
   source ~/.airlab/shellhelper.sh
@@ -125,6 +125,10 @@ export ONETOUCHGEN_ACCEPT_EULA=y
 export DATA_DIR=/Users/anthony_marquez/dev/airbnb/data
 autoload -U compinit; compinit
 source <(yak completion zsh)
+
+if [ -s ~/.gvm/scripts/gvm ]; then
+  source ~/.gvm/scripts/gvm
+fi
 
 ###########
 ### END ###
