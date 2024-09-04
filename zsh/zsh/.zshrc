@@ -405,7 +405,7 @@ fi
 # it to python3
 if ! can_haz python; then
   if can_haz python3; then
-    alias python=python3
+    #alias python=python3
   fi
   # Ugly hack for zsh-completion-generator - but only do it if the user
   # hasn't already set GENCOMPL_PY

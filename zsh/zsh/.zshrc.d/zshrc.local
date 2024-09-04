@@ -118,7 +118,14 @@ if [ -e ~/.airlab/shellhelper.sh ]; then
 fi
 # AIRLAB-DO-NOT-MODIFY section:ShellWrapper }}}
 
-export PATH="/usr/local/bin:$PATH"
+# Conditional PATH additions
+# from https://gist.github.com/ryanorsinger/7d89ad58901b5590ec3e1f23d7b9f887
+for path_candidate in /usr/local/bin 
+do
+  if [ -d ${path_candidate} ]; then
+    export PATH="${path_candidate}:${PATH}"
+  fi
+done
 
 export ONETOUCHGEN_LDAP_USER=anthony_marquez
 export ONETOUCHGEN_ACCEPT_EULA=y
