@@ -17,10 +17,16 @@ export GOBIN=$GOPATH/bin
 export PYENV_ROOT=$HOME/.pyenv
 
 # Mac specific installed with homebrew
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  export GOROOT=/usr/local/opt/go/libexec
+if can_haz mise > /dev/null; then
+  export GOROOT=$(mise where go)
 else
-  export GOROOT=/usr/local/go
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    if can_haz brew; then
+      export GOROOT=$(brew --prefix golang)/libexec
+    fi
+  else
+    export GOROOT=/usr/local/go
+  fi
 fi
 
 # Conditional PATH additions
@@ -73,10 +79,11 @@ if can_haz rbenv > /dev/null; then
   eval "$(rbenv init -)"
 fi
 
-
-# Adding nodenv
-if can_haz nodenv > /dev/null; then 
-  eval "$(nodenv init -)"
+# Adding nvm
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+if [ -d $NVM_DIR ]; then
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
 # Adding direnv tool
