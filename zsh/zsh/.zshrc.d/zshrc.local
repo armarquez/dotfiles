@@ -112,11 +112,6 @@ fi
 
 unset -f watch
 #unset -f k
-# Source Airlab's shell integration, if it exists.
-if [ -e ~/.airlab/shellhelper.sh ]; then
-  source ~/.airlab/shellhelper.sh
-fi
-# AIRLAB-DO-NOT-MODIFY section:ShellWrapper }}}
 
 # Conditional PATH additions
 # from https://gist.github.com/ryanorsinger/7d89ad58901b5590ec3e1f23d7b9f887
@@ -137,6 +132,37 @@ if [ -s ~/.gvm/scripts/gvm ]; then
   source ~/.gvm/scripts/gvm
 fi
 
+eval "$(mise activate zsh)"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/anthony_marquez/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/anthony_marquez/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/Users/anthony_marquez/miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/anthony_marquez/miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+if [ -f "/Users/anthony_marquez/miniforge3/etc/profile.d/mamba.sh" ]; then
+    . "/Users/anthony_marquez/miniforge3/etc/profile.d/mamba.sh"
+fi
+# <<< conda initialize <<<
+# >>> arc initialize >>>
+if [ -f "/Users/anthony_marquez/miniforge3/etc/profile.d/arc.sh" ]; then
+  . "/Users/anthony_marquez/miniforge3/etc/profile.d/arc.sh"
+fi
+# <<< arc initialize <<<
+# Choose the environment that your shell starts in
+# this can be "base" or any airconda env (eg; local/some_env:0.0.1)
+export AIRCONDA_STARTUP_ENV="base"
+export AIRCONDA_PS1_STYLE="fancy"
+# or if using a light terminal "light" is a theme optimized for light terminals
+export AIRCONDA_PS1_THEME="dark"
 ###########
 ### END ###
 ###########
