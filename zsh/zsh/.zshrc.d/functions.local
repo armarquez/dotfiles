@@ -78,22 +78,6 @@ function update_airbnb() {
         
         # Update homebrew
         update_brew
-        
-        # Update AirBnB specific tooling
-        if can_haz airlab; then
-            # Update AWS session token for default role
-            # if can_haz remfa; then
-            #     remfa --aws-role default
-            # fi
-            
-            # Update airlab tools (specifically kube-gen)
-            airlab update
-            
-            # Kubernetes certificate access using IAM
-            if can_haz k; then
-                AWS_PROFILE_NOMFA=airbnb-users-kubernetes k certs-iam
-            fi            
-        fi
     fi
 }
 
