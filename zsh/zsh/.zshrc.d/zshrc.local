@@ -18,6 +18,7 @@ export PYENV_ROOT=$HOME/.pyenv
 
 # Mac specific installed with homebrew
 if can_haz mise > /dev/null; then
+  eval "$(mise activate)"
   export GOROOT=$(mise where go)
 else
   if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -103,6 +104,10 @@ if [[ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" 
     fi
 else
     # echo "Visual Studio Code executable not found. Please install Visual Studio Code."
+fi
+
+if is_wsl; then
+  export XDG_RUNTIME_DIR=/tmp
 fi
 
 # This is not commented out for `work-airbnb` branch
