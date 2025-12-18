@@ -1,7 +1,7 @@
 # dotfiles
 My config files for setting up my system
 
-## Pacakages to Install
+## Packages to Install
 
 - zsh
 - stow
@@ -9,6 +9,35 @@ My config files for setting up my system
 - direnv
 - pygitup
 - tig
+- just (command runner)
+
+## Using Just
+
+This repo includes a `justfile` for common tasks. Run `just` to see available commands:
+
+```bash
+just              # Show available commands
+just init         # Run one-time setup
+just stow         # Symlink dotfiles
+just update-zsh   # Update zsh-quickstart-kit subtree
+just update-plugins  # Update zgenom plugins
+just regen        # Regenerate zgenom init.zsh
+```
+
+## Configuration Structure
+
+This repo uses fragment files in `~/.zshrc.d/` for configuration. Files are loaded in alphanumeric order:
+
+| File | Description |
+|------|-------------|
+| `50-base.zsh` | Base config (pyenv, golang, nvm, etc.) - loaded everywhere |
+| `50-base-aliases.zsh` | Base aliases - loaded everywhere |
+| `50-base-functions.zsh` | Base functions - loaded everywhere |
+| `80-airbnb.zsh` | Airbnb config - **auto-detects environment** |
+| `80-airbnb-aliases.zsh` | Airbnb aliases - **auto-detects environment** |
+| `80-airbnb-functions.zsh` | Airbnb functions - **auto-detects environment** |
+
+The work-specific files automatically detect the environment and only load when appropriate. This means you can use the same `main` branch on both personal and work machines - no branch switching needed!
 
 ## zsh
 

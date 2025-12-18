@@ -291,10 +291,10 @@ export PATH
 if can_haz brew; then
   BREW_PREFIX=$(brew --prefix)
   if [[ -d "${BREW_PREFIX}/bin" ]]; then
-    export PATH="$PATH:${BREW_PREFIX}/bin"
+    export PATH="${BREW_PREFIX}/bin:$PATH"
   fi
   if [[ -d "${BREW_PREFIX}/sbin" ]]; then
-    export PATH="$PATH:${BREW_PREFIX}/sbin"
+    export PATH="${BREW_PREFIX}/sbin:$PATH"
   fi
 fi
 

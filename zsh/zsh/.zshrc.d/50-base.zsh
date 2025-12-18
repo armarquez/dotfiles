@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/bin/zsh
 ##
 # Copyright 2020 Anthony Marquez <@boogeymarquez>
 #
 # BSD licensed, see LICENSE.txt in this repository.
+#
+# Base configuration - loaded on all machines
 
 # Check if a command exists
 function can_haz() {
@@ -18,8 +20,7 @@ export PYENV_ROOT=$HOME/.pyenv
 
 # Mac specific installed with homebrew
 if can_haz mise > /dev/null; then
-  eval "$(mise activate)"
-  export GOROOT=$(mise where go)
+  export GOROOT=$(mise where go 2>/dev/null)
 else
   if [[ "$(uname -s)" == "Darwin" ]]; then
     if can_haz brew; then
@@ -34,7 +35,7 @@ fi
 for path_candidate in $PYENV_ROOT/bin \
   ~/.local/bin \
   /usr/local/go/bin \
-  $GOPATH/bin 
+  $GOPATH/bin
 do
   if [ -d ${path_candidate} ]; then
     export PATH="${PATH}:${path_candidate}"
@@ -42,14 +43,12 @@ do
 done
 
 # Setup pyenv to manage Python environments
-#export PATH="$HOME/.pyenv/bin:$PATH"
-if can_haz pyenv > /dev/null; then 
+if can_haz pyenv > /dev/null; then
   eval "$(pyenv init --path)"
   eval "$(pyenv init -)"
 
-  if can_haz pyenv-virtualenv-init > /dev/null; then 
+  if can_haz pyenv-virtualenv-init > /dev/null; then
     eval "$(pyenv virtualenv-init -)"
-#     pyenv virtualenvwrapper_lazy
   fi
 fi
 
@@ -59,14 +58,10 @@ export PROJECT_HOME=$HOME/Devel
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 
 # Setup jenv to manage JAVA environments
-# Try to find jenv, if it's not on the path
 export JENV_ROOT="${JENV_ROOT:=${HOME}/.jenv}"
-# if ! type jenv > /dev/null && [ -f "${JENV_ROOT}/bin/jenv" ]; then
-#     export PATH="${JENV_ROOT}/bin:${PATH}"
-# fi
 
 # Lazy load jenv
-if type jenv > /dev/null; then
+if type jenv > /dev/null 2>&1; then
     export PATH="${JENV_ROOT}/bin:${JENV_ROOT}/shims:${PATH}"
     function jenv() {
         unset -f jenv
@@ -83,44 +78,18 @@ fi
 # Adding nvm
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 if [ -d $NVM_DIR ]; then
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
 # Adding direnv tool
-if can_haz direnv > /dev/null; then 
+if can_haz direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
-# Check if Visual Studio Code executable exists
+# Check if Visual Studio Code executable exists and create symlink
 if [[ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]]; then
-    # Check if symbolic link already exists
     if [[ ! -h "/usr/local/bin/code" ]]; then
-        # Create symbolic link
-        ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
-        # echo "Symbolic link for 'code' command created successfully."
-    else
-        # echo "Symbolic link '/usr/local/bin/code' already exists."
+        ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code 2>/dev/null || true
     fi
-else
-    # echo "Visual Studio Code executable not found. Please install Visual Studio Code."
 fi
-
-if is_wsl; then
-  export XDG_RUNTIME_DIR=/tmp
-fi
-
-# This is not commented out for `work-airbnb` branch
-#####################################
-########## AIRBNB SPECIFIC ##########
-#####################################
-
-# unset -f watch
-# unset -f k
-# source ~/.airlab/shellhelper.sh
-# export ONETOUCHGEN_LDAP_USER=anthony_marquez
-# export ONETOUCHGEN_ACCEPT_EULA=y
-
-###########
-### END ###
-###########
