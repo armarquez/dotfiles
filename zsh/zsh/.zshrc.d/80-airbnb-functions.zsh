@@ -59,3 +59,41 @@ function delete_dead_branches() {
 function gwr () {
     $(git rev-parse --show-toplevel)/gradlew $@
 }
+
+# General Update
+function update_brew() {
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        if can_haz brew; then
+            brew update
+            brew upgrade
+        fi
+    fi
+}
+
+# Updating AirBnB Tech Stack
+# Need to be on VPN
+function update_airbnb() {
+    if can_haz yk; then
+        # Prompt for passphrase so we can access git.musta.ch
+        yk
+
+        # Update homebrew
+        update_brew
+    fi
+}
+
+# Daily startup routine - updates Airbnb stack and shows agenda
+function yaateeh(){
+    # Update your AirBnB stack
+    update_airbnb
+
+    # Output today's agenda if icalBuddy is available
+    if can_haz icalBuddy; then
+        # Separator
+        # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+        echo "\n"
+        echo "$(tput bold)$(tput setaf 5)$(tput setab 0)## WHAT'S ON YOUR AGENDA FOR TODAY? ##$(tput sgr 0)\n"
+
+        today
+    fi
+}
