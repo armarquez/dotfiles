@@ -34,6 +34,9 @@ fi
 
 unset -f watch
 
+# For k tool to work properly
+unset -f k
+
 # Conditional PATH additions
 for path_candidate in /usr/local/bin
 do
