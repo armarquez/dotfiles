@@ -64,3 +64,26 @@ status:
 # Reconfigure powerlevel10k prompt
 p10k:
     zsh -c 'p10k configure'
+
+# --- Remote sync recipes ---
+
+# Fetch changes from public GitHub repo (origin) without merging
+fetch-upstream:
+    git fetch origin main
+
+# Pull changes from public GitHub repo (origin) into current branch
+pull-upstream:
+    git pull origin main
+
+# Push current branch to work repo (ghe/git.musta.ch)
+push-work:
+    git push ghe main
+
+# Sync: pull from public repo and push to work repo
+sync: pull-upstream push-work
+    @echo "Synced from origin (github.com) to ghe (git.musta.ch)"
+
+# Push to both remotes
+push-all:
+    git push origin main
+    git push ghe main
