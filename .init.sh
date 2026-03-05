@@ -11,7 +11,9 @@ DOTFILES_DIR="$HOME/.dotfiles"
 # Install zgenom if not present
 if [ ! -d "$HOME/.zqs-zgenom" ] && [ ! -d "$HOME/zgenom" ]; then
     echo "==> Installing zgenom..."
-    git clone https://github.com/jandamm/zgenom.git "$HOME/.zqs-zgenom"
+    git clone https://github.com/jandamm/zgenom.git "$HOME/.zqs-zgenom" || {
+        echo "==> Warning: Failed to clone zgenom (network issue?). Zsh plugins will not load until this succeeds."
+    }
 fi
 
 # Use stow to symlink zsh configuration files if stow is available
@@ -83,15 +85,18 @@ echo "false" > "$HOME/.zqs-settings/load-ssh-keys"
 # Install fzf if not present (required for history search)
 if ! command -v fzf &> /dev/null; then
     echo "==> Installing fzf..."
+    _fzf_installed=false
     if command -v apt-get &> /dev/null; then
-        sudo apt-get update && sudo apt-get install -y fzf 2>/dev/null || true
+        sudo apt-get install -y fzf 2>/dev/null && _fzf_installed=true || true
     elif command -v brew &> /dev/null; then
-        brew install fzf 2>/dev/null || true
-    else
-        # Manual install
+        brew install fzf 2>/dev/null && _fzf_installed=true || true
+    fi
+    # Fall back to git clone if package manager failed or isn't available
+    if [ "$_fzf_installed" = false ]; then
         git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf" 2>/dev/null || true
         "$HOME/.fzf/install" --all --no-bash --no-fish 2>/dev/null || true
     fi
+    unset _fzf_installed
 fi
 
 # Install just command runner if not present
@@ -99,6 +104,7 @@ if ! command -v just &> /dev/null; then
     echo "==> Installing just command runner..."
     if command -v apt-get &> /dev/null; then
         # For Debian/Ubuntu - use prebuilt binary
+        mkdir -p "$HOME/.local/bin"
         curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to "$HOME/.local/bin" 2>/dev/null || true
     elif command -v brew &> /dev/null; then
         brew install just 2>/dev/null || true
@@ -108,6 +114,10 @@ if ! command -v just &> /dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to "$HOME/.local/bin" 2>/dev/null || true
     fi
 fi
+
+# Seed the zsh-quickstart last-update timestamp so the first shell startup
+# doesn't immediately try to git fetch/pull from GitHub.
+date +%s > ~/.zsh-quickstart-last-update
 
 echo "==> Dotfiles initialization complete!"
 echo "==> Your zsh configuration will be loaded on next shell startup."

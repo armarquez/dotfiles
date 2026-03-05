@@ -27,7 +27,7 @@ fi
 
 # Activate mise if available
 if command -v mise &> /dev/null; then
-    eval "$(mise activate bash)" 2>/dev/null || true
+    eval "$(mise activate bash 2>/dev/null)" 2>/dev/null || true
 fi
 
 echo "==> Startup script complete!"
