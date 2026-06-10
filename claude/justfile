@@ -1,0 +1,148 @@
+# Claude Code config management recipes
+# Invoked as `just claude <recipe>` from the dotfiles root via `mod claude`
+#
+# Layout:
+#   claude/base/    — always stowed into ~/.claude
+#   claude/airbnb/  — stowed only when an Airbnb environment is detected
+#
+# justfile_directory() in a `mod` context resolves to the root dotfiles dir.
+
+STOW_DIR := justfile_directory() / "claude"
+TARGET   := home_directory() / ".claude"
+FORK     := "armarquez/claude-code-config"
+
+# Show available recipes
+default:
+    @just --list
+
+# Symlink Claude config into ~/.claude (backs up any existing non-symlink files)
+stow:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    STOW_DIR="{{ STOW_DIR }}"
+    TARGET="{{ TARGET }}"
+
+    # Detect Airbnb environment — mirrors _is_airbnb_env() in 80-airbnb.zsh
+    # Override with CLAUDE_FORCE_AIRBNB=1 (force on) or =0 (force off)
+    _is_airbnb_env() {
+        if [[ "${CLAUDE_FORCE_AIRBNB:-}" == "1" ]]; then return 0; fi
+        if [[ "${CLAUDE_FORCE_AIRBNB:-}" == "0" ]]; then return 1; fi
+        command -v yak    &>/dev/null && return 0
+        [[ -d "$HOME/dev/airbnb" ]]   && return 0
+        command -v airlab &>/dev/null && return 0
+        [[ -d "$HOME/.airlab" ]]      && return 0
+        return 1
+    }
+
+    echo "==> Stowing Claude base config into $TARGET ..."
+
+    # Back up real (non-symlink) files that stow would replace
+    for rel in settings.json CLAUDE.md statusline.sh; do
+        target_file="$TARGET/$rel"
+        if [[ -f "$target_file" && ! -L "$target_file" ]]; then
+            echo "==> Backing up $target_file -> ${target_file}.bak"
+            mv "$target_file" "${target_file}.bak"
+        fi
+    done
+    for src in "$STOW_DIR/base/rules/"*.md; do
+        [[ -f "$src" ]] || continue
+        target_rule="$TARGET/rules/$(basename "$src")"
+        if [[ -f "$target_rule" && ! -L "$target_rule" ]]; then
+            echo "==> Backing up $target_rule -> ${target_rule}.bak"
+            mv "$target_rule" "${target_rule}.bak"
+        fi
+    done
+
+    stow --target="$TARGET" --dir="$STOW_DIR" base
+
+    if _is_airbnb_env; then
+        echo "==> Airbnb environment detected — stowing Airbnb rules ..."
+        for src in "$STOW_DIR/airbnb/rules/"*.md; do
+            [[ -f "$src" ]] || continue
+            target_rule="$TARGET/rules/$(basename "$src")"
+            if [[ -f "$target_rule" && ! -L "$target_rule" ]]; then
+                echo "==> Backing up $target_rule -> ${target_rule}.bak"
+                mv "$target_rule" "${target_rule}.bak"
+            fi
+        done
+        stow --target="$TARGET" --dir="$STOW_DIR" airbnb
+        echo "==> Airbnb rules linked."
+    else
+        echo "==> Personal environment — skipping Airbnb rules."
+    fi
+
+    echo "==> Done. Run 'ls -la ~/.claude/rules/' to verify."
+
+# Re-stow (useful after adding new files to either package)
+restow:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    STOW_DIR="{{ STOW_DIR }}"
+    TARGET="{{ TARGET }}"
+
+    _is_airbnb_env() {
+        if [[ "${CLAUDE_FORCE_AIRBNB:-}" == "1" ]]; then return 0; fi
+        if [[ "${CLAUDE_FORCE_AIRBNB:-}" == "0" ]]; then return 1; fi
+        command -v yak    &>/dev/null && return 0
+        [[ -d "$HOME/dev/airbnb" ]]   && return 0
+        command -v airlab &>/dev/null && return 0
+        [[ -d "$HOME/.airlab" ]]      && return 0
+        return 1
+    }
+
+    stow --restow --target="$TARGET" --dir="$STOW_DIR" base
+
+    if _is_airbnb_env; then
+        stow --restow --target="$TARGET" --dir="$STOW_DIR" airbnb
+        echo "==> Re-stowed base + airbnb."
+    else
+        # Remove any previously stowed Airbnb rules if env switched
+        stow --delete --target="$TARGET" --dir="$STOW_DIR" airbnb 2>/dev/null || true
+        echo "==> Re-stowed base only (Airbnb rules removed)."
+    fi
+
+# Remove all stow-managed symlinks from ~/.claude
+unstow:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    STOW_DIR="{{ STOW_DIR }}"
+    TARGET="{{ TARGET }}"
+    stow --delete --target="$TARGET" --dir="$STOW_DIR" base
+    stow --delete --target="$TARGET" --dir="$STOW_DIR" airbnb 2>/dev/null || true
+    echo "==> Unstowed all Claude config."
+
+# Diff vendored files against the current fork to surface upstream changes
+check-upstream:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export GH_HOST=github.com
+    FORK="{{ FORK }}"
+    BASE="{{ STOW_DIR }}/base"
+    any_diff=0
+
+    fetch_and_diff() {
+        local remote_path="$1" local_file="$2" label="$3"
+        echo "--- $label ---"
+        url=$(gh api "repos/$FORK/contents/$remote_path" --jq .download_url 2>/dev/null) || {
+            echo "  [WARN] Could not fetch $remote_path from fork"; return
+        }
+        remote_content=$(curl -sf "$url") || {
+            echo "  [WARN] Download failed for $remote_path"; return
+        }
+        if diff <(echo "$remote_content") "$local_file" >/dev/null 2>&1; then
+            echo "  (no diff)"
+        else
+            diff <(echo "$remote_content") "$local_file" || true
+            any_diff=1
+        fi
+    }
+
+    fetch_and_diff "settings.json"         "$BASE/settings.json" "settings.json"
+    fetch_and_diff "claude-md-template.md" "$BASE/CLAUDE.md"     "CLAUDE.md (from claude-md-template.md)"
+    fetch_and_diff "scripts/statusline.sh" "$BASE/statusline.sh" "statusline.sh"
+
+    if [[ "$any_diff" -eq 0 ]]; then
+        echo "==> All vendored files match the fork — nothing to cherry-pick."
+    else
+        echo "==> Diffs shown above. Review and manually apply anything you want to keep."
+    fi
