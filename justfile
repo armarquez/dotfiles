@@ -1,5 +1,8 @@
 # Dotfiles management justfile
 
+# Claude Code config recipes (see claude/justfile); zsh recipes stay here to avoid subtree clobber
+mod claude
+
 # Default recipe - show available commands
 default:
     @just --list

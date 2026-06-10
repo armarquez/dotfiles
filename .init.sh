@@ -119,5 +119,11 @@ fi
 # doesn't immediately try to git fetch/pull from GitHub.
 date +%s > ~/.zsh-quickstart-last-update
 
+# Stow Claude Code config into ~/.claude (idempotent — backs up conflicts to *.bak)
+if command -v just &> /dev/null; then
+    echo "==> Stowing Claude Code config..."
+    just claude stow || echo "==> Warning: Claude stow failed, run 'just claude stow' manually."
+fi
+
 echo "==> Dotfiles initialization complete!"
 echo "==> Your zsh configuration will be loaded on next shell startup."
