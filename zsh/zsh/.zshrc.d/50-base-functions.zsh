@@ -11,6 +11,15 @@ function can_haz() {
   which "$@" > /dev/null 2>&1
 }
 
+# Check if running inside WSL (v1 or v2)
+function is_wsl() {
+  grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null
+}
+
+function is_windows_path_available() {
+  [[ -d /mnt/c/Windows ]]
+}
+
 # General Update
 function update_brew() {
     if [[ "$(uname -s)" == "Darwin" ]]; then
