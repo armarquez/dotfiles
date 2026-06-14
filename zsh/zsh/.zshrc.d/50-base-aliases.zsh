@@ -24,3 +24,19 @@ if can_haz python3 > /dev/null; then
   alias urlencode='python3 -c "import sys, urllib.parse as ul; \
     print (ul.quote_plus(sys.argv[1]))"'
 fi
+
+if is_wsl; then
+  # Access Windows VBoxManage if available
+  if [[ -x "/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" ]]; then
+    alias vboxmanage="/mnt/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe"
+  fi
+
+  # Use Windows vagrant.exe if present
+  if can_haz vagrant.exe; then
+    alias vagrant="vagrant.exe"
+  fi
+
+  if can_haz op.exe; then
+    alias op="op.exe"
+  fi
+fi

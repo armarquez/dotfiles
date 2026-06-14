@@ -93,3 +93,9 @@ if [[ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" 
         ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code 2>/dev/null || true
     fi
 fi
+
+if is_wsl; then
+  mkdir -p ~/.local/runtime && chmod 700 ~/.local/runtime
+  export XDG_RUNTIME_DIR="$HOME/.local/runtime"
+  export WSL_DETECTED=1
+fi
